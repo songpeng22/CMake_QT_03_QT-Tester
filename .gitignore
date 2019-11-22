@@ -1,3 +1,10 @@
+# ignore binary folder
+[Bb]in
+# ignore build folder
+build*/
+[Oo]bj/
+# ignore tmp folder
+[Tt]mp
 # Prerequisites
 *.d
 
