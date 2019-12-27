@@ -24,10 +24,35 @@
 int main(int argc, char *argv[])
 {
 	QApplication a(argc, argv);
+    //Comman Variables
+    int nIndex = 0;
+    //Arc
+
     //QString
     QString str = "123456789";
-    int nIndex = str.indexOf("345");
-    qDebug() << "index:" << nIndex;
+    nIndex = str.indexOf("345");
+    qDebug() << "index in QString:" << nIndex;
+
+    //QStringList
+    QStringList strList;
+    static const char *strIsoCountryShortNames[] =
+    {
+        "ago - Angola",
+        "alb - Albania",
+        "are - United Arab Emirates",
+        "can - Canada",
+        "che - Switzerland",
+        "chn - China",
+        "col - Colombia",
+    };
+    int nSize = sizeof(char *);
+    nIndex = sizeof(strIsoCountryShortNames) /  sizeof(char *);
+    for(int i=0;i<sizeof(strIsoCountryShortNames)/sizeof(char *);i++){
+        strList.append(strIsoCountryShortNames[i]);
+    }
+    nIndex = strList.indexOf("chn - ");
+    qDebug() << "nIndex in QStringList:" << nIndex;
+
 
     //Widget
 #if 1
