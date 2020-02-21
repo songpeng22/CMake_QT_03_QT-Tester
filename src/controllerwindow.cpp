@@ -52,100 +52,49 @@
 
 #include "controllerwindow.h"
 
-ControllerWindow::ControllerWindow()
-{
-    previewWindow = nullptr;
-    m_hintsGroupBox = nullptr;
-    m_bottomLayout = nullptr;
-    m_mainLayout = nullptr;
-    m_hintsLayout = nullptr;
-    //hints checkbox
-    checkboxThread = nullptr;
-    layout = nullptr;
-    timerCheckBox = nullptr;
-
-#if defined(CODE_OFF)
-	qDebug() << "&msWindowsFixedSizeDialogCheckBox" << &msWindowsFixedSizeDialogCheckBox;
-    checkboxThread = new QCheckBoxThread;
-    QCheckBoxThread ** pp = &checkboxThread;
-	qDebug() << "msWindowsFixedSizeDialogCheckBox" << msWindowsFixedSizeDialogCheckBox;
-	qDebug() << "&msWindowsFixedSizeDialogCheckBox" << &msWindowsFixedSizeDialogCheckBox;
-	qDebug() << "pp" << pp;
-	qDebug() << "*pp" << *pp;
-	queuedWidgets.enqueue(&msWindowsFixedSizeDialogCheckBox);
-	QCheckBox ** ppGet = queuedWidgets.dequeue();
-	delete *ppGet;
-	*ppGet = nullptr;
-//	ppGet = nullptr;
-	qDebug() << "msWindowsFixedSizeDialogCheckBox" << msWindowsFixedSizeDialogCheckBox;
-#endif
-
-    //group && radio
-    createTypeGroupBox();
-    recreateHintsGroupBox();
-
-    quitButton = new QPushButton(tr("&Quit"));
-    connect(quitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
-
-    m_bottomLayout = new QVBoxLayout;
-//    m_bottomLayout->addStretch();
-    m_bottomLayout->addWidget(quitButton);
-
-    m_mainLayout = new QHBoxLayout;
-    m_mainLayout->addWidget(typeGroupBox);
-    m_mainLayout->addWidget(m_hintsGroupBox);
-    m_mainLayout->addLayout(m_bottomLayout);
-    setLayout(m_mainLayout);
-
-    setWindowTitle(tr("Window Flags"));
-    updatePreview();
-}
-
-void ControllerWindow::createTypeGroupBox()
-{
-    typeGroupBox = new QGroupBox(tr("Type"));
-
-    widgetRadioButton = createRadioButton(tr("QThread/QLayout"));
-    dialogRadioButton = createRadioButton(tr("Timer"));
-    sheetRadioButton = createRadioButton(tr("QFileInfo/QDir"));
 /*
-    drawerRadioButton = createRadioButton(tr("Drawer"));
-    popupRadioButton = createRadioButton(tr("Popup"));
-    toolRadioButton = createRadioButton(tr("Tool"));
-    toolTipRadioButton = createRadioButton(tr("Tooltip"));
-    splashScreenRadioButton = createRadioButton(tr("Splash screen"));
-*/
-    /*
-     * default checked
-    */
-    widgetRadioButton->setChecked(true);
-
-    QGridLayout *layout = new QGridLayout;
-    layout->addWidget(widgetRadioButton, 0, 0);
-    layout->addWidget(dialogRadioButton, 1, 0);
-    layout->addWidget(sheetRadioButton, 2, 0);
-/*
-    layout->addWidget(drawerRadioButton, 3, 0);
-    layout->addWidget(popupRadioButton, 0, 1);
-    layout->addWidget(toolRadioButton, 1, 1);
-    layout->addWidget(toolTipRadioButton, 2, 1);
-    layout->addWidget(splashScreenRadioButton, 3, 1);
-*/
-    typeGroupBox->setLayout(layout);
-}
-
-QRadioButton *ControllerWindow::createRadioButton(const QString &text)
+ * 新增界面 - 左侧主分类 - RadioButton
+ */
+void ControllerWindow::insertRadioButton()
 {
-    QRadioButton *button = new QRadioButton(text);
-    connect(button, SIGNAL(clicked()), this, SLOT(updatePreview()));
-    return button;
+    m_radioBtnVector.append( createRadioButton(tr("QThread/QLayout")) );
+    m_radioBtnVector.append( createRadioButton(tr("Timer")) );
+    m_radioBtnVector.append( createRadioButton(tr("QFileInfo/QDir")) );
+    m_radioBtnVector.append( createRadioButton(tr("Network/QSocketNotifier")) );
 }
 
+/*
+ * 新增界面 - 点击RadioButton 出现Window
+ */
+QWidgetBase * ControllerWindow::insertWindow(int nIndexOfWindow)
+{
+    if (0 == nIndexOfWindow)
+       return (QWidgetBase *) new QWidgetSub(this);
+    else if( 1 == nIndexOfWindow )
+       return (QWidgetBase *) new QDialogSub(this);
+    else if( 2 == nIndexOfWindow )
+       return (QWidgetBase *) new QWidgetFileDir(this);
+    else if( 3 == nIndexOfWindow )
+       return (QWidgetBase *) new QDialog4(this);
+    else
+    {
+
+    }
+    return nullptr;
+}
+
+/*
+ * End of 新增界面 - 左侧主分类
+ */
+
+/*
+ * 新增界面 - 右侧辅助分类
+ */
 void ControllerWindow::updatePreview()
 {
     qDebug() << "ControllerWindow::updatePreview()";
 
-    Qt::WindowFlags flags = 0;
+    Qt::WindowFlags flags = Qt::Window;
 
     //hide/clean every related control
     qDebug() << "ControllerWindow::updatePreview()::hideAll";
@@ -158,30 +107,46 @@ void ControllerWindow::updatePreview()
         delete previewWindow;
         previewWindow = nullptr;
     }
-
+#if 1
+    if (m_radioBtnVector[0]->isChecked()) {
+#else
     if (widgetRadioButton->isChecked()) {
+#endif
         flags = Qt::Window;
         /*
          * QWidgetSub
          */
         qDebug() << "ControllerWindow::updatePreview()::new QWidgetSub";
-        previewWindow = (QWidgetBase *) new QWidgetSub(this);
+        previewWindow = insertWindow(0);
         recreateHintsGroupBoxWidgets(ControllerWindow::widget);
+#if 1
+    } else if (m_radioBtnVector[1]->isChecked()) {
+#else
     } else if (dialogRadioButton->isChecked()) {
+#endif
         flags = Qt::Dialog;
         /*
          * QDialogSub
          */
-        previewWindow =(QWidgetBase *) new QDialogSub(this);
+        previewWindow = insertWindow(1);
         setWindowTitle("Enter your age");
         recreateHintsGroupBoxWidgets(ControllerWindow::dialog);
+#if 1
+    } else if (m_radioBtnVector[2]->isChecked()) {
+#else
     } else if (sheetRadioButton->isChecked()) {
+#endif
         flags = Qt::Window;
         /*
          * QWidgetFileDir
          */
-        previewWindow =(QWidgetBase *)  new QWidgetFileDir(this);
+        previewWindow = insertWindow(2);
         recreateHintsGroupBoxWidgets(ControllerWindow::widget_2);
+    }
+    else if (m_radioBtnVector[3]->isChecked()) {
+        qDebug() << "QSocketNotifier";
+        previewWindow = insertWindow(3);
+        recreateHintsGroupBoxWidgets(ControllerWindow::widget_4);
     }
 
     if(nullptr == previewWindow)
@@ -224,7 +189,7 @@ void ControllerWindow::recreateHintsGroupBoxWidgets(enumWidgets widget)
         connect(checkboxThread, SIGNAL(hint(QString)), previewWindow, SLOT(setHints(QString)));
         connect(layout, SIGNAL(hint(QString)), previewWindow, SLOT(setHints(QString)));
     }
-    if( widget == ControllerWindow::dialog )
+    else if( widget == ControllerWindow::dialog )
     {
         timerCheckBox = new QCheckBoxTimer(tr("timer"));
 
@@ -235,8 +200,7 @@ void ControllerWindow::recreateHintsGroupBoxWidgets(enumWidgets widget)
         //emit hints to observer
         connect(timerCheckBox, SIGNAL(hint(QString)), previewWindow, SLOT(setHints(QString)));
     }
-
-    if( widget == ControllerWindow::widget_2 )
+    else if( widget == ControllerWindow::widget_2 )
     {
         fileDirCheckBox = new QCheckBox(tr("QFileInfo/QDir"));
         //create relation
@@ -246,7 +210,98 @@ void ControllerWindow::recreateHintsGroupBoxWidgets(enumWidgets widget)
         connect(fileDirCheckBox,SIGNAL(clicked(bool)),this,SLOT(emitQFileHints(bool)));
         connect(this,SIGNAL(hints(QString)),previewWindow,SLOT(setHints(QString)));
     }
+    else
+    {
+
+    }
 }
+
+/*
+ * End of 新增界面 - 右侧辅助分类
+ */
+
+ControllerWindow::ControllerWindow()
+{
+    previewWindow = nullptr;
+    m_hintsGroupBox = nullptr;
+    m_bottomLayout = nullptr;
+    m_mainLayout = nullptr;
+    m_hintsLayout = nullptr;
+    //hints checkbox
+    checkboxThread = nullptr;
+    layout = nullptr;
+    timerCheckBox = nullptr;
+
+    //group && radio
+    createTypeGroupBox();
+    recreateHintsGroupBox();
+
+    quitButton = new QPushButton(tr("&Quit"));
+    connect(quitButton, SIGNAL(clicked()), qApp, SLOT(quit()));
+
+    m_bottomLayout = new QVBoxLayout;
+//    m_bottomLayout->addStretch();
+    m_bottomLayout->addWidget(quitButton);
+
+    m_mainLayout = new QHBoxLayout;
+    m_mainLayout->addWidget(typeGroupBox);
+    m_mainLayout->addWidget(m_hintsGroupBox);
+    m_mainLayout->addLayout(m_bottomLayout);
+    setLayout(m_mainLayout);
+
+    setWindowTitle(tr("Window Flags"));
+    updatePreview();
+}
+
+ControllerWindow::~ControllerWindow()
+{
+    qDebug() << "~ControllerWindow()";
+    if(previewWindow){
+        delete previewWindow;
+        previewWindow = nullptr;
+    }
+}
+
+void ControllerWindow::createTypeGroupBox()
+{
+    typeGroupBox = new QGroupBox(tr("Type"));
+#if 1
+    insertRadioButton();
+#else
+    widgetRadioButton = createRadioButton(tr("QThread/QLayout"));
+    dialogRadioButton = createRadioButton(tr("Timer"));
+    sheetRadioButton = createRadioButton(tr("QFileInfo/QDir"));
+#endif
+    /*
+     * default checked
+    */
+#if 1
+    m_radioBtnVector[0]->setChecked(true);
+#else
+    widgetRadioButton->setChecked(true);
+#endif
+    QGridLayout *layout = new QGridLayout;
+#if 1
+    for( int i=0;i < m_radioBtnVector.size();i++ )
+    {
+        layout->addWidget(m_radioBtnVector[i],i,0);
+    }
+#else
+    layout->addWidget(widgetRadioButton, 0, 0);
+    layout->addWidget(dialogRadioButton, 1, 0);
+    layout->addWidget(sheetRadioButton, 2, 0);
+#endif
+    typeGroupBox->setLayout(layout);
+}
+
+QRadioButton *ControllerWindow::createRadioButton(const QString &text)
+{
+    QRadioButton *button = new QRadioButton(text);
+    connect(button, SIGNAL(clicked()), this, SLOT(updatePreview()));
+    return button;
+}
+
+
 
 void ControllerWindow::recreateHintsGroupBox()
 {

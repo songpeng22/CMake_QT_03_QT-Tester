@@ -53,6 +53,7 @@
 
 #include <QWidget>
 #include <QQueue>
+#include <QVector>
 
 QT_BEGIN_NAMESPACE
 class QCheckBox;
@@ -65,10 +66,13 @@ class QVBoxLayout;
 class QGridLayout;
 QT_END_NAMESPACE
 
+//Window
 #include "qwidgetbase.h"
 #include "qwidgetsub.h"
 #include "qdialogsub.h"
 #include "qwidgetFileDir.h"
+#include "qdialog4.h"
+//
 #include "qcheckboxthread.h"
 #include "qcheckboxlayout.h"
 #include "qcheckboxtimer.h"
@@ -79,15 +83,19 @@ class ControllerWindow : public QWidget
 
 public:
     ControllerWindow();
+    ~ControllerWindow();
     enum enumWidgets{
         widget = 0,
         dialog,
         widget_2,
+        widget_4,
         max_widget
     };
 private slots:
     void updatePreview();
 private:
+    void insertRadioButton();
+    QWidgetBase * insertWindow(int nIndexOfWindow);
     void createTypeGroupBox();
     void recreateHintsGroupBox();
     void recreateHintsGroupBoxWidgets(enumWidgets);
@@ -103,14 +111,13 @@ private:
     QGroupBox *m_hintsGroupBox;
     QPushButton *quitButton;
     //raido
+#if 1
+    QVector<QRadioButton*> m_radioBtnVector;
+#else
     QRadioButton *widgetRadioButton;
     QRadioButton *dialogRadioButton;
     QRadioButton *sheetRadioButton;
-    QRadioButton *drawerRadioButton;
-    QRadioButton *popupRadioButton;
-    QRadioButton *toolRadioButton;
-    QRadioButton *toolTipRadioButton;
-    QRadioButton *splashScreenRadioButton;
+#endif
     //checkbox
     QCheckBoxThread *checkboxThread;
     QCheckBox *layout;

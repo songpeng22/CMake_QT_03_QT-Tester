@@ -74,6 +74,7 @@ FILE(GLOB project_sources
     qdialogsub.cpp
     qwidgetsub.cpp
     qwidgetfiledir.cpp
+    qdialog4.cpp
     #
     qthreadsub.cpp
     qcheckboxthread.cpp

@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
 	msgBox.setWindowTitle("confirm");
 	msgBox.setStandardButtons(QMessageBox::Ok);
 	msgBox.setDefaultButton(QMessageBox::Ok);
-	msgBox.setIcon(QMessageBox::Critical);
+    msgBox.setIcon(QMessageBox::Information);
 	int ret = msgBox.exec();
 
 #elif 0

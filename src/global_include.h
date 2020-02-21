@@ -56,7 +56,9 @@
 //
 #include <QProcess>
 #include <QThread>
-//
-
+//network
+#include <QTcpServer>
+#include <QTcpSocket>
+#include <QSocketNotifier>
 
 #endif//_GLOBAL_INCLUDE_H_
