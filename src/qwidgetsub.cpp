@@ -24,6 +24,11 @@ QWidgetSub::QWidgetSub(QWidget *parent) : QWidgetBase(parent)
     setLayout(layout);
 }
 
+QWidgetSub::~QWidgetSub()
+{
+
+}
+
 void QWidgetSub::setHints(QString hints)
 {
     qDebug() << "QWidgetSub::updateHints" << hints;
@@ -34,8 +39,15 @@ void QWidgetSub::setHints(QString hints)
         m_pThread->start();
     }
     if( hints == QString("-thread checked") ){
-        qDebug() << "-thread";
+        qDebug() << "-thread::thread is terminated by m_pThread->terminate()";
+#if 1
         m_pThread->terminate();
+        m_pThread->wait(1000);
+#elif 1
+        m_pThread->requestInterruption(); //safe to make task cleanly interruptible
+#else
+        m_pThread->quit();  //not work,cause no event loop
+#endif
     }
 
     //layout

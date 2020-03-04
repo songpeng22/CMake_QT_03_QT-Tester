@@ -17,6 +17,7 @@ class QWidgetSub : public QWidgetBase
     Q_OBJECT
 public:
     explicit QWidgetSub(QWidget *parent = nullptr);
+    ~QWidgetSub();
 public:
     QThreadSub * m_pThread;
     QSemaphore *m_pSemaphore;

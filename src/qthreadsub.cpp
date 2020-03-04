@@ -21,6 +21,13 @@ void QThreadSub::run()
     int nAcquire = 2;
     while( true ){
         qDebug() << "QThreadSub:available:" << m_pSemaphore->available();
+
+        if (QThread::currentThread()->isInterruptionRequested())
+        {
+            qDebug()<< "isInterruptionRequested:true";
+            break;
+        }
+
         if( m_pSemaphore->tryAcquire( nAcquire ) ){
 //            m_pSemaphore->acquire( nAcquire );
 
